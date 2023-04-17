@@ -1,0 +1,5 @@
+mysql
+.DS_Store
+.idea
+.env
+.vscode

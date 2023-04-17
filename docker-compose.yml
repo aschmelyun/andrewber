@@ -1,0 +1,68 @@
+version: '3'
+services:
+  site:
+    build:
+      context: ./dockerfiles
+      dockerfile: vue.dockerfile
+    volumes:
+      - ./src/frontend:/var/www/html
+    labels:
+      - "traefik.http.routers.site.rule=Host(`andrewber.localhost`)"
+      - "traefik.http.services.site.loadbalancer.server.port=8081"
+    depends_on:
+      - traefik
+      - api
+
+  mysql:
+    image: mariadb:10.6
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+
+  api:
+    build:
+      context: ./dockerfiles
+      dockerfile: laravel.dockerfile
+    volumes:
+      - ./src/backend:/var/www/html
+    labels:
+      - "traefik.http.routers.api.rule=(Host(`andrewber.localhost`) && PathPrefix(`/api`))"
+      - "traefik.http.services.api.loadbalancer.server.port=8082"
+    depends_on:
+      - traefik
+      - mysql
+
+  websockets:
+    build:
+      context: ./dockerfiles
+      dockerfile: laravel.dockerfile
+    ports:
+      - "6001:6001"
+    volumes:
+      - ./src/backend:/var/www/html
+    command:
+      [
+        "/usr/local/bin/php",
+        "artisan",
+        "websockets:serve",
+        "--host=0.0.0.0"
+      ]
+    depends_on:
+      - api
+
+  traefik:
+    image: traefik:v2.9
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
