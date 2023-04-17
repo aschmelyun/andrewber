@@ -1,7 +1,7 @@
 <template>
     <div class="pt-16">
-        <h1 class="text-3xl font-semibold mb-4">Enter your phone number</h1>
         <form v-if="!waitingOnVerification" action="#" @submit.prevent="handleLogin">
+            <h1 class="text-3xl font-semibold mb-4">Enter your phone number</h1>
             <div class="overflow-hidden shadow sm:rounded-md max-w-sm mx-auto text-left">
                 <div class="bg-white px-4 py-5 sm:p-6">
                     <div>
@@ -16,6 +16,7 @@
             </div>
         </form>
         <form v-else action="#" @submit.prevent="handleVerification">
+            <h1 class="text-3xl font-semibold mb-4">Enter your login code</h1>
             <div class="overflow-hidden shadow sm:rounded-md max-w-sm mx-auto text-left">
                 <div class="bg-white px-4 py-5 sm:p-6">
                     <div>
