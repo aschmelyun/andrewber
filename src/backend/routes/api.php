@@ -14,13 +14,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/driver', [DriverController::class, 'update']);
 
     Route::post('/trip', [TripController::class, 'store']);
-    Route::get('/trip/{trip}', [TripController::class, 'show']);
-    Route::post('/trip/{trip}/accept', [TripController::class, 'accept']);
-    Route::post('/trip/{trip}/start', [TripController::class, 'start']);
-    Route::post('/trip/{trip}/end', [TripController::class, 'end']);
-    Route::post('/trip/{trip}/location', [TripController::class, 'location']);
 
-    Route::get('/user', function(Request $request) {
+    Route::group(['middleware' => 'can:view,trip'], function () {
+        Route::get('/trip/{trip}', [TripController::class, 'show']);
+        Route::post('/trip/{trip}/accept', [TripController::class, 'accept']);
+        Route::post('/trip/{trip}/start', [TripController::class, 'start']);
+        Route::post('/trip/{trip}/end', [TripController::class, 'end']);
+        Route::post('/trip/{trip}/location', [TripController::class, 'location']);
+    });
+
+    Route::get('/user', function (Request $request) {
         return $request->user();
     });
 });
