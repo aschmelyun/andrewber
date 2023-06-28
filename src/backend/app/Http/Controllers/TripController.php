@@ -55,7 +55,7 @@ class TripController extends Controller
         ]);
 
         $trip->update([
-            'driver_id' => $request->user()->id,
+            'driver_id' => $request->user()->driver->id,
             'driver_location' => $request->driver_location,
         ]);
 
